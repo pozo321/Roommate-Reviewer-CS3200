@@ -3,9 +3,30 @@
 A chore tracking and accountability app for shared dorm rooms.
 
 **Team:** Aryaman Mathur · Hutch Turner · Nathan Rabe · Phone Kyaw
-CS 3200 — Database Design — Summer B 2026
+CS 3200 (Introduction to Databases), Northeastern University, Summer B 2026
 
 **Demo video:** [Demo Video YouTube](https://youtu.be/evQs_XJqxgI)
+
+> **This is Phone (Po) Kyaw's fork** of the team repository,
+> [09AriMathur/Roommie-Reeves](https://github.com/09AriMathur/Roommie-Reeves), which the
+> team renamed after the course ended. The code is the same. This README adds the section
+> below.
+
+## My part
+
+- I wrote the `requests` blueprint (`api/backend/requests/request_routes.py`). It covers how
+  a resident files a chore swap, extension, dispute or strike expunction, and how the request
+  is then approved, rejected, amended or withdrawn. A request that exists but can no longer
+  change returns 409, and an ID that doesn't exist returns 404.
+- I also wrote the `user_away` and `dorms` blueprints.
+- The `Requests` table follows my ER model, where extensions, disputes and expunctions had the
+  same shape and so became one entity with a type column. Hutch Turner wrote the table itself.
+  I later added its `Requested_By_UserID` and `Offered_Task_ID` columns, so a request records
+  who filed it and a swap can name both chores.
+- On the frontend I wrote most of the resident pages (home, My Chores, My Requests, Away Dates,
+  My Standing) and the RA's home, Room Reports and Interventions pages.
+- I also made the app's logo and did a visual polish pass across it
+  ([PR #22](https://github.com/09AriMathur/Roommie-Reeves/pull/22)).
 
 ---
 
@@ -23,7 +44,7 @@ already attached.
 ## Who uses it
 
 The app ships with four personas across three roles. You pick one on the landing
-page — there is no real login, the buttons just set a role in the session.
+page. There is no real login: the buttons just set a role in the session.
 
 | Persona | Role | What they do |
 | --- | --- | --- |
@@ -32,7 +53,7 @@ page — there is no real login, the buttons just set a role in the session.
 | **Carol Diaz** | Residence Advisor | Reviews reports across her rooms, tracks completion rates, manages interventions, and sets the rules. |
 | **Sam Reynolds** | System Administrator | Oversight across the whole building: user accounts, RA assignments, dorm occupancy, and the activity log. |
 
-Joshua and Frank are both Residents and share the identical set of seven pages —
+Joshua and Frank are both Residents and share the identical set of seven pages:
 a home dashboard plus six feature pages (My Chores, Chore Reports, My Requests,
 Ask My RA, Away Dates, My Standing). The two personas exist to show how
 differently those same pages read for a resident who is keeping up versus one
@@ -45,7 +66,7 @@ User Accounts, Resident Advisors, Dorms & Occupancy).
 
 ## Architecture
 
-Three Docker containers. The front end never talks to the database directly —
+Three Docker containers. The front end never talks to the database directly;
 every page goes through the REST API.
 
 ```
@@ -53,14 +74,14 @@ Streamlit  ──HTTP──>  Flask API  ──SQL──>  MySQL
   :8501                 :4000               :3200
 ```
 
-- **`./app`** — Streamlit front end. One Python file per page in `app/src/pages/`,
+- **`./app`**: Streamlit front end. One Python file per page in `app/src/pages/`,
   with the sidebar built by role in `app/src/modules/nav.py`.
-- **`./api`** — Flask REST API, split into eleven blueprints by resource (users,
+- **`./api`**: Flask REST API, split into eleven blueprints by resource (users,
   rooms, tasks, requests, room reports, RAs, rules, dorms, away dates,
   interventions, logs).
-- **`./database-files`** — `ddl.sql` creates the schema and seeds it. Any `.sql`
+- **`./database-files`**: `ddl.sql` creates the schema and seeds it. Any `.sql`
   file here runs automatically when the database container is **created**.
-- **`./docs`** — project documentation, including the REST route matrix.
+- **`./docs`**: project documentation, including the REST route matrix.
 
 ## Running it
 
@@ -74,7 +95,7 @@ cp api/.env.template api/.env
 ```
 
 Then open `api/.env` and set `SECRET_KEY` to any random string and
-`MYSQL_ROOT_PASSWORD` to a password of your choice. Leave the rest alone —
+`MYSQL_ROOT_PASSWORD` to a password of your choice. Leave the rest alone.
 `DB_NAME` must stay `roommate_app`, which is the database `ddl.sql` creates.
 
 **2. Start everything:**
@@ -91,7 +112,7 @@ whether a problem is the page or the backend. MySQL is exposed on port `3200`.
 ### Resetting the database
 
 The seed SQL only runs when the database container is **created**, not when it
-restarts. If you change `ddl.sql`, a plain restart will not pick it up — you have
+restarts. If you change `ddl.sql`, a plain restart will not pick it up; you have
 to destroy the volume:
 
 ```bash
@@ -114,5 +135,5 @@ and refreshing the browser is enough. Two exceptions:
 ## Documentation
 
 `docs/rest-matrix.md` lists the API routes and which user story each one serves.
-The rest of `docs/` covers setup prerequisites, theming, and the role-based
-access pattern.
+The rest of `docs/` covers setup prerequisites, theming, and how the course
+template's role-based navigation works.
